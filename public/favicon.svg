@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="gold-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f3e3ca" />
+      <stop offset="50%" stop-color="#c5a880" />
+      <stop offset="100%" stop-color="#9d7e52" />
+    </linearGradient>
+  </defs>
+  <!-- Elegant Royal Dark Backdrop Circle -->
+  <circle cx="256" cy="256" r="240" fill="#1e152a" stroke="url(#gold-grad)" stroke-width="12" />
+  
+  <!-- Outer decorative star ornaments -->
+  <circle cx="256" cy="256" r="215" fill="none" stroke="url(#gold-grad)" stroke-width="2" stroke-dasharray="10 15" opacity="0.8" />
+  
+  <!-- Symmetric royal floral ornament rings -->
+  <path d="M 256,60 C 275,100 320,110 320,130 C 320,150 285,160 256,190 C 227,160 192,150 192,130 C 192,110 237,100 256,60 Z" fill="url(#gold-grad)" opacity="0.9" />
+  <path d="M 256,452 C 275,412 320,402 320,382 C 320,362 285,352 256,322 C 227,352 192,362 192,382 C 192,402 237,412 256,452 Z" fill="url(#gold-grad)" opacity="0.9" />
+  
+  <!-- Side floral ornaments -->
+  <path d="M 60,256 C 100,275 110,320 130,320 C 150,320 160,285 190,256 C 160,227 150,192 130,192 C 110,192 100,237 60,256 Z" fill="url(#gold-grad)" opacity="0.9" />
+  <path d="M 452,256 C 412,275 402,320 382,320 C 362,320 352,285 322,256 C 352,227 362,192 382,192 C 402,192 412,237 452,256 Z" fill="url(#gold-grad)" opacity="0.9" />
+
+  <!-- Intricate Inner Border -->
+  <circle cx="256" cy="256" r="160" fill="none" stroke="url(#gold-grad)" stroke-width="4" />
+  <circle cx="256" cy="256" r="150" fill="none" stroke="url(#gold-grad)" stroke-width="1.5" stroke-dasharray="4 6" />
+
+  <!-- Central Initials "AH" with Elegant Classic Serif Font Style -->
+  <g transform="translate(256, 275)" text-anchor="middle">
+    <text font-family="'Playfair Display', 'Didot', 'Georgia', serif" font-weight="900" font-size="115" fill="url(#gold-grad)" letter-spacing="1">AH</text>
+  </g>
+
+  <!-- Brand Sub-text in Monogram Layout -->
+  <path id="textPath-top" d="M 120,256 A 136,136 0 0,1 392,256" fill="none" />
+  <path id="textPath-bottom" d="M 392,256 A 136,136 0 0,1 120,256" fill="none" />
+  
+  <text font-family="'Inter', sans-serif" font-size="16" font-weight="800" fill="url(#gold-grad)" letter-spacing="9" word-spacing="4">
+    <textPath href="#textPath-top" startOffset="50%" text-anchor="middle">AL-HAMD</textPath>
+  </text>
+  <text font-family="'Inter', sans-serif" font-size="16" font-weight="800" fill="url(#gold-grad)" letter-spacing="9" word-spacing="4">
+    <textPath href="#textPath-bottom" startOffset="50%" text-anchor="middle">FABRICS</textPath>
+  </text>
+</svg>

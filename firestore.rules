@@ -1,0 +1,192 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny-all safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper: Basic ID format constraint to block poisoning attacks
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Helper: Extract incoming resource data map
+    function incoming() {
+      return request.resource.data;
+    }
+
+    // Helper: Extract existing resource data map
+    function existing() {
+      return resource.data;
+    }
+
+    // Match rules for the "orders" collection
+    match /orders/{orderId} {
+      // Allow any guest customer to fetch their own single order tracking record
+      // and allow the admin to list and read all placed orders.
+      allow get, list: if true;
+
+      // Allow guest checkouts to place orders under robust validation
+      allow create: if (
+        isValidId(orderId) &&
+        incoming().id == orderId &&
+        incoming().customerName is string && incoming().customerName.size() <= 100 &&
+        incoming().phoneNumber is string && incoming().phoneNumber.size() <= 30 &&
+        incoming().city is string && incoming().city.size() <= 60 &&
+        incoming().province is string && incoming().province.size() <= 40 &&
+        incoming().address is string && incoming().address.size() <= 500 &&
+        incoming().items is list && incoming().items.size() <= 50 &&
+        incoming().subtotal is number && incoming().subtotal >= 0 &&
+        incoming().deliveryCharges is number && incoming().deliveryCharges >= 0 &&
+        incoming().total is number && incoming().total >= 0 &&
+        incoming().paymentMethod is string && incoming().paymentMethod in ['cod', 'advance', 'stripe'] &&
+        incoming().paymentStatus is string && incoming().paymentStatus in ['pending', 'paid', 'failed'] &&
+        incoming().status is string && incoming().status == 'Pending' &&
+        incoming().createdAt is string &&
+        (!('whatsappNumber' in incoming().keys()) || (incoming().whatsappNumber is string && incoming().whatsappNumber.size() <= 30)) &&
+        (!('advanceProvider' in incoming().keys()) || (incoming().advanceProvider is string)) &&
+        (!('paymentReceiptImage' in incoming().keys()) || (incoming().paymentReceiptImage is string)) &&
+        (!('couponCode' in incoming().keys()) || (incoming().couponCode is string)) &&
+        (!('couponDiscount' in incoming().keys()) || (incoming().couponDiscount is number))
+      );
+
+      // Allow updating order status and payment fields
+      allow update: if (
+        isValidId(orderId)
+      );
+
+      // Allow cancelling/deleting orders from the database
+      allow delete: if isValidId(orderId);
+    }
+
+    // Match rules for the "reviews" collection
+    match /reviews/{reviewId} {
+      // Public reviews can be listed and retrieved
+      allow get, list: if true;
+
+      // Customers can submit reviews; must be initialized as approved: false
+      allow create: if (
+        isValidId(reviewId) &&
+        incoming().id == reviewId &&
+        incoming().keys().hasAll([
+          'id', 'productId', 'productName', 'customerName', 'rating', 'comment', 'approved', 'createdAt'
+        ]) &&
+        incoming().keys().size() == 8 &&
+        incoming().productId is string && incoming().productId.size() <= 128 &&
+        incoming().productName is string && incoming().productName.size() <= 150 &&
+        incoming().customerName is string && incoming().customerName.size() <= 100 &&
+        incoming().rating is number && incoming().rating >= 1 && incoming().rating <= 5 &&
+        incoming().comment is string && incoming().comment.size() <= 1000 &&
+        incoming().approved == false &&
+        incoming().createdAt is string && incoming().createdAt.size() <= 50
+      );
+
+      // Admin toggles approval state of reviews
+      allow update: if (
+        isValidId(reviewId) &&
+        incoming().diff(existing()).affectedKeys().hasOnly(['approved']) &&
+        incoming().approved is bool
+      );
+
+      // Admin can reject (delete) reviews from the moderation view
+      allow delete: if true;
+    }
+
+    // Match rules for the "banners" collection
+    match /banners/{bannerId} {
+      // Banners show on the storefront, so they are public to list and read
+      allow get, list: if true;
+
+      // Allow admin / authorized client actions to manage banners with schema sanity
+      allow create, update: if (
+        isValidId(bannerId) &&
+        incoming().id == bannerId &&
+        incoming().keys().hasAll([
+          'id', 'title', 'subtitle', 'ctaText', 'image', 'targetView', 'targetPayload', 'badge', 'isActive', 'order'
+        ]) &&
+        incoming().keys().size() == 10 &&
+        incoming().title is string && incoming().title.size() <= 200 &&
+        incoming().subtitle is string && incoming().subtitle.size() <= 1000 &&
+        incoming().ctaText is string && incoming().ctaText.size() <= 100 &&
+        incoming().image is string && incoming().image.size() <= 1500000 &&
+        incoming().targetView is string && incoming().targetView in ['home', 'collection', 'category', 'product'] &&
+        incoming().targetPayload is string && incoming().targetPayload.size() <= 200 &&
+        incoming().badge is string && incoming().badge.size() <= 100 &&
+        incoming().isActive is bool &&
+        incoming().order is number
+      );
+
+      // Support removing/deleting old banners from the dashboard
+      allow delete: if isValidId(bannerId);
+    }
+
+    // Match rules for "collections" collection
+    match /collections/{collectionId} {
+      // Anyone can fetch themes/collections
+      allow get, list: if true;
+      // Admin Panel operations (add/edit/delete)
+      allow create, update: if (
+        isValidId(collectionId) &&
+        incoming().id == collectionId &&
+        incoming().name is string && incoming().name.size() <= 200 &&
+        incoming().image is string && incoming().image.size() <= 1500000 &&
+        incoming().banner is string && incoming().banner.size() <= 1500000 &&
+        incoming().description is string && incoming().description.size() <= 2000 &&
+        (!('isGents' in incoming().keys()) || incoming().isGents is bool)
+      );
+      allow delete: if true;
+    }
+
+    // Match rules for "categories" collection
+    match /categories/{categoryId} {
+      allow get, list: if true;
+      allow create, update: if (
+        isValidId(categoryId) &&
+        incoming().id == categoryId &&
+        incoming().name is string && incoming().name.size() <= 200 &&
+        incoming().description is string && incoming().description.size() <= 2000 &&
+        incoming().isGents is bool
+      );
+      allow delete: if true;
+    }
+
+    // Match rules for "products" collection
+    match /products/{productId} {
+      allow get, list: if true;
+      allow create, update: if (
+        isValidId(productId) &&
+        incoming().id == productId &&
+        incoming().name is string && incoming().name.size() <= 200 &&
+        incoming().shortDetails is string && incoming().shortDetails.size() <= 1000 &&
+        incoming().description is string && incoming().description.size() <= 5000 &&
+        incoming().price is number && incoming().price >= 0 &&
+        incoming().images is list &&
+        incoming().category is string &&
+        incoming().collectionId is string &&
+        incoming().isNewArrival is bool &&
+        incoming().isHotSelling is bool &&
+        incoming().rating is number
+      );
+      allow delete: if true;
+    }
+
+    // Match rules for "settings" collection
+    match /settings/{settingsId} {
+      allow get, list: if true;
+      allow create, update: if (
+        isValidId(settingsId) &&
+        incoming().id == settingsId &&
+        incoming().pixelId is string && incoming().pixelId.size() <= 50 &&
+        incoming().enabled is bool
+      );
+      allow delete: if true;
+    }
+
+    // Match rules for "coupons" collection
+    match /coupons/{couponId} {
+      allow read, write: if true;
+    }
+  }
+}

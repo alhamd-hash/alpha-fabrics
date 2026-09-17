@@ -1,0 +1,309 @@
+{
+  "entities": {
+    "Order": {
+      "title": "Order",
+      "description": "Customer unstitched suit fabric order invoice including delivery and billing details",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique order identifier"
+        },
+        "customerName": {
+          "type": "string",
+          "description": "Full name of the recipient customer"
+        },
+        "whatsappNumber": {
+          "type": "string",
+          "description": "Customer contact WhatsApp number"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "description": "Required phone helpline for courier dispatch"
+        },
+        "city": {
+          "type": "string",
+          "description": "PAK destination city"
+        },
+        "province": {
+          "type": "string",
+          "description": "Province region"
+        },
+        "address": {
+          "type": "string",
+          "description": "Street direction and house number details"
+        },
+        "items": {
+          "type": "array",
+          "description": "List of ordered items with selected colors/images"
+        },
+        "subtotal": {
+          "type": "number",
+          "description": "Sum price of outfits"
+        },
+        "deliveryCharges": {
+          "type": "number",
+          "description": "Shipping fees of PKR 300 or 0 for free shipping"
+        },
+        "total": {
+          "type": "number",
+          "description": "Sum final invoice amount due"
+        },
+        "paymentMethod": {
+          "type": "string",
+          "enum": ["cod", "stripe"]
+        },
+        "paymentStatus": {
+          "type": "string",
+          "enum": ["pending", "paid", "failed"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["Pending", "Confirmed", "Dispatched", "On The Way", "Delivered", "Cancelled"]
+        },
+        "isReceived": {
+          "type": "boolean",
+          "description": "True if customer confirmed receipt and details are redacted"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Order placement timestamp"
+        }
+      },
+      "required": ["id", "customerName", "phoneNumber", "city", "province", "address", "items", "subtotal", "deliveryCharges", "total", "paymentMethod", "paymentStatus", "status", "createdAt"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Customer feedback and grading review",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Review unique tracking ID"
+        },
+        "productId": {
+          "type": "string",
+          "description": "Associated unstitched garment product ID"
+        },
+        "productName": {
+          "type": "string",
+          "description": "Product display name prefix"
+        },
+        "customerName": {
+          "type": "string",
+          "description": "Name of the review author"
+        },
+        "rating": {
+          "type": "number",
+          "description": "Numerical star rating bounded 1-5"
+        },
+        "comment": {
+          "type": "string",
+          "description": "Text testimonial feedback"
+        },
+        "approved": {
+          "type": "boolean",
+          "description": "Approved and visible to public"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Creation timestamp"
+        }
+      },
+      "required": ["id", "productId", "productName", "customerName", "rating", "comment", "approved", "createdAt"]
+    },
+    "HomeBanner": {
+      "title": "HomeBanner",
+      "description": "Slider / Hero image banners showed on the client dashboard header",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique banner ID"
+        },
+        "title": {
+          "type": "string",
+          "description": "Main banner headline"
+        },
+        "subtitle": {
+          "type": "string",
+          "description": "Short secondary description"
+        },
+        "ctaText": {
+          "type": "string",
+          "description": "Button call to action text"
+        },
+        "image": {
+          "type": "string",
+          "description": "High-res banner image URL or Base64 data string"
+        },
+        "targetView": {
+          "type": "string",
+          "enum": ["home", "collection", "category", "product"]
+        },
+        "targetPayload": {
+          "type": "string",
+          "description": "The category name or collection ID linked with the banner"
+        },
+        "badge": {
+          "type": "string",
+          "description": "Optional upper small badge text"
+        },
+        "isActive": {
+          "type": "boolean",
+          "description": "Whether the banner is active or hidden"
+        },
+        "order": {
+          "type": "number",
+          "description": "Sort order placement of the slide"
+        }
+      },
+      "required": ["id", "title", "subtitle", "ctaText", "image", "targetView", "targetPayload", "badge", "isActive", "order"]
+    },
+    "Collection": {
+      "title": "Collection",
+      "description": "Collection of products",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "image": { "type": "string" },
+        "banner": { "type": "string" },
+        "description": { "type": "string" },
+        "isGents": { "type": "boolean" }
+      },
+      "required": ["id", "name", "image", "banner", "description"]
+    },
+    "Category": {
+      "title": "Category",
+      "description": "Product categories separating Gents and Ladies clothing",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "isGents": { "type": "boolean" }
+      },
+      "required": ["id", "name", "description", "isGents"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Unstitched garments products list",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "shortDetails": { "type": "string" },
+        "description": { "type": "string" },
+        "price": { "type": "number" },
+        "images": { "type": "array" },
+        "category": { "type": "string" },
+        "collectionId": { "type": "string" },
+        "specifications": { "type": "object" },
+        "isLadiesSuit": { "type": "boolean" },
+        "isNewArrival": { "type": "boolean" },
+        "isHotSelling": { "type": "boolean" },
+        "rating": { "type": "number" },
+        "relatedType": { "type": "string" },
+        "customRelatedIds": { "type": "array" }
+      },
+      "required": ["id", "name", "shortDetails", "description", "price", "images", "category", "collectionId", "isNewArrival", "isHotSelling", "rating"]
+    },
+    "MarketingSettings": {
+      "title": "MarketingSettings",
+      "description": "Store application marketing pixels and analytics IDs",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Primary settings identifier (e.g. 'pixel')"
+        },
+        "pixelId": {
+          "type": "string",
+          "description": "Facebook/Meta Pixel ID"
+        },
+        "enabled": {
+          "type": "boolean",
+          "description": "Toggle if the pixel should be loaded globally"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of modification"
+        }
+      },
+      "required": ["id", "pixelId", "enabled"]
+    },
+    "Coupon": {
+      "title": "Coupon",
+      "description": "Discount coupon code settings",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The coupon code (e.g. SUMMER300)"
+        },
+        "discountType": {
+          "type": "string",
+          "enum": ["flat", "percentage"]
+        },
+        "discountValue": {
+          "type": "number",
+          "description": "Value of discount"
+        },
+        "applyTo": {
+          "type": "string",
+          "enum": ["all", "specific"]
+        },
+        "productIds": {
+          "type": "array",
+          "description": "Product IDs this coupon applies to when applyTo is 'specific'"
+        },
+        "active": {
+          "type": "boolean"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "discountType", "discountValue", "applyTo", "productIds", "active", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Collection storing all placement orders"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Collection containing student reviews"
+    },
+    "/banners/{bannerId}": {
+      "schema": "HomeBanner",
+      "description": "Collection storing custom dashboard header banners"
+    },
+    "/collections/{collectionId}": {
+      "schema": "Collection",
+      "description": "Product Collections"
+    },
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Product Categories"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Garment Products list"
+    },
+    "/settings/{settingsId}": {
+      "schema": "MarketingSettings",
+      "description": "Dynamic configurations for analytics, marketing tracking systems"
+    },
+    "/coupons/{couponId}": {
+      "schema": "Coupon",
+      "description": "Discount coupon codes"
+    }
+  }
+}

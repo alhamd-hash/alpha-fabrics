@@ -1,0 +1,6 @@
+{
+  "name": "Al-Hamd Fabrics",
+  "description": "Premium ecommerce store for Al-Hamd Fabrics Lahore, featuring luxury unstitched suits, bridal wear, and lawn collection with simulated Stripe payments and powerful admin panel.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
